@@ -22,7 +22,7 @@ class ComputerDatabaseSimulation extends Simulation {
       http("Search")
         .get("/computers?f=#{searchCriterion}")
         .check(
-          css("a:contains('#{searchComputerName}')", "href").saveAs("computerUrl")
+          css("a:contains('#{searchComputerName2}')", "href").saveAs("computerUrl")
       ),
       pause(1),
       http("Select")
