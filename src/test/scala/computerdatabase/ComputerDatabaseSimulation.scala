@@ -4,6 +4,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
 import java.util.concurrent.ThreadLocalRandom
+import scala.concurrent.duration._
 
 /**
  * This sample is based on our official tutorials:
@@ -67,16 +68,16 @@ class ComputerDatabaseSimulation extends Simulation {
             .formParam("company", "37")
             .check(
               status.is { session =>
-                  // we do a check on a condition that's been customized with
-                  // a lambda. It will be evaluated every time a user executes
-                  // the request
-                  200 + ThreadLocalRandom.current().nextInt(2)
+                // we do a check on a condition that's been customized with
+                // a lambda. It will be evaluated every time a user executes
+                // the request
+                200 + ThreadLocalRandom.current().nextInt(2)
               }
             )
         )
     }
-    // if the chain didn't finally succeed, have the user exit the whole scenario
-    .exitHereIfFailed
+      // if the chain didn't finally succeed, have the user exit the whole scenario
+      .exitHereIfFailed
 
   val httpProtocol =
     http.baseUrl("https://computer-database.gatling.io")
@@ -91,7 +92,21 @@ class ComputerDatabaseSimulation extends Simulation {
   val admins = scenario("Admins").exec(search, browse, edit)
 
   setUp(
-    users.inject(rampUsers(10).during(10)),
-    admins.inject(rampUsers(2).during(10))
+    users
+      .forever {
+        exec(http("user request").get("/api/user"))
+      }
+      .inject(
+        constantUsersPerSec(10).during(60.minutes)
+      ),
+
+    admins
+      .forever {
+        exec(http("admin request").get("/api/admin"))
+      }
+      .inject(
+        constantUsersPerSec(2).during(60.minutes)
+      )
   ).protocols(httpProtocol)
+    .maxDuration(60.minutes)
 }
