@@ -4,12 +4,11 @@ execution:
 
 scenarios:
   sample:
-    script: gatling-maven-plugin-demo-scala-3.13.4-shaded.jar
+    script: gatling-maven-plugin-demo-scala-3.9.5-shaded.jar
     simulation: computerdatabase.ComputerDatabaseSimulation
 
 modules:
   version-switch:
     switch-java: 17
   gatling:
-    properties:
-      version: 3.13.4
+    version: 3.9.5
