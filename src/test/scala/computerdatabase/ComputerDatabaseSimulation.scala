@@ -92,21 +92,12 @@ class ComputerDatabaseSimulation extends Simulation {
   val admins = scenario("Admins").exec(search, browse, edit)
 
   setUp(
-    users
-      .forever {
-        exec(http("user request").get("/api/user"))
-      }
-      .inject(
-        constantUsersPerSec(10).during(60.minutes)
-      ),
-
-    admins
-      .forever {
-        exec(http("admin request").get("/api/admin"))
-      }
-      .inject(
-        constantUsersPerSec(2).during(60.minutes)
-      )
+    users.inject(
+      constantUsersPerSec(10).during(10.minutes)
+    ),
+    admins.inject(
+      constantUsersPerSec(2).during(10.minutes)
+    )
   ).protocols(httpProtocol)
-    .maxDuration(60.minutes)
+    .maxDuration(10.minutes)
 }
